@@ -99,6 +99,25 @@ python scripts/init-db.py
 
 ## API接口
 
+### 参数调优接口
+- `POST /api/v1/parameter-tuner/create-interface` - 创建参数调优界面
+- `POST /api/v1/parameter-tuner/update-parameters` - 更新参数
+- `POST /api/v1/parameter-tuner/apply-selection` - 应用参数选择
+- `GET /api/v1/parameter-tuner/export-optimal` - 导出最优参数
+
+### 模型版本管理接口
+- `POST /api/v1/model-manager/create-version` - 创建模型版本
+- `GET /api/v1/model-manager/list-versions` - 列出版本
+- `GET /api/v1/model-manager/version/{version_id}` - 获取版本详情
+- `POST /api/v1/model-manager/rollback/{version_id}` - 回滚版本
+- `POST /api/v1/model-manager/compare-versions` - 比较版本
+
+### 实时推理接口
+- `POST /api/v1/inference/predict` - 单次推理
+- `POST /api/v1/inference/batch-predict` - 批量推理
+- `GET /api/v1/inference/stats` - 获取服务统计
+- `GET /api/v1/inference/health` - 健康检查
+
 ### GPU资源管理接口
 
 #### 获取GPU资源状态
@@ -307,6 +326,11 @@ Content-Type: application/json
 ### 运行GPU资源管理集成测试
 ```bash
 python test_gpu_resource_integration.py
+```
+
+### 运行参数调优模块测试
+```bash
+python test_parameter_tuner.py
 ```
 
 ### 运行振动算法测试
