@@ -1,4 +1,4 @@
- """
+"""
 GPU资源管理器与训练平台集成模块
 提供多GPU支持、资源调度和监控功能
 """
@@ -25,7 +25,8 @@ try:
     from k8s_client import K8sResourceManager
     from gpu_hpa_controller import GPUHPAController
     from resource_monitor import ResourceMonitor
-    from config import config as gpu_config
+    # 创建模拟配置
+    gpu_config = type('Config', (), {'config': {}})()
 except ImportError as e:
     logging.warning(f"GPU资源管理器模块导入失败: {e}")
     # 创建模拟类以保持兼容性

@@ -12,8 +12,7 @@ from .trainers import (
     StatusRecognitionTrainer,
     HealthAssessmentTrainer,
     VibrationAnalysisTrainer,
-    SimulationTrainer,
-    AlertRuleTrainer
+    SimulationTrainer
 )
 from .models import TrainingConfig, TrainingResult, AlgorithmType
 from .gpu_resource_integration import (
@@ -38,8 +37,7 @@ class AlgorithmTrainingEngine:
             AlgorithmType.STATUS_RECOGNITION: StatusRecognitionTrainer(),
             AlgorithmType.HEALTH_ASSESSMENT: HealthAssessmentTrainer(),
             AlgorithmType.VIBRATION_ANALYSIS: VibrationAnalysisTrainer(),
-            AlgorithmType.SIMULATION: SimulationTrainer(),
-            AlgorithmType.ALERT: AlertRuleTrainer()
+            AlgorithmType.SIMULATION: SimulationTrainer()
         }
         self.training_tasks = {}  # 存储训练任务状态
         

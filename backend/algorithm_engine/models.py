@@ -14,7 +14,6 @@ class AlgorithmType(str, Enum):
     HEALTH_ASSESSMENT = "health_assessment"        # 健康度评估
     VIBRATION_ANALYSIS = "vibration_analysis"      # 振动分析
     SIMULATION = "simulation"                      # 模拟算法
-    ALERT = "alert"                               # 报警算法
 
 
 class TrainingStatus(str, Enum):

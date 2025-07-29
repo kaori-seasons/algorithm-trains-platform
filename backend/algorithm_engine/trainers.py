@@ -391,9 +391,9 @@ class StatusRecognitionTrainer(BaseTrainer):
         """分层采样"""
         try:
             return data.groupby(target_column, group_keys=False).apply(
-                lambda x: x.sample(min(len(x), size // len(data[target_column].unique()))
+                lambda x: x.sample(min(len(x), size // len(data[target_column].unique())))
             )
-        except:
+        except Exception:
             return data.sample(n=min(size, len(data)), random_state=42)
     
     def _generate_debug_results(self, processed_data: pd.DataFrame, debug_params: Dict[str, Any]) -> Dict[str, Any]:
@@ -968,91 +968,6 @@ class VibrationAnalysisTrainer(BaseTrainer):
             }
         }
 
-
-class AlarmTrainer(BaseTrainer):
-    """报警算法训练器"""
-    
-    async def train(self, config: TrainingConfig, data: Dict[str, Any]) -> TrainingResult:
-        """训练报警模型"""
-        start_time = datetime.now()
-        
-        try:
-            # 加载数据
-            train_data = self._load_data(config.train_data_path)
-            
-            # 准备特征和目标
-            X = train_data[config.feature_columns]
-            y = train_data[config.target_column]
-            
-            # 数据预处理
-            X_scaled = self.scaler.fit_transform(X)
-            
-            # 分割训练和验证数据
-            X_train, X_val, y_train, y_val = train_test_split(
-                X_scaled, y, test_size=0.2, random_state=42
-            )
-            
-            # 创建报警分类模型
-            self.model = RandomForestClassifier(
-                n_estimators=config.algorithm_params.get('n_estimators', 100),
-                random_state=42
-            )
-            
-            # 训练模型
-            self.model.fit(X_train, y_train)
-            
-            # 预测和评估
-            y_pred = self.model.predict(X_val)
-            metrics = self._calculate_metrics(y_val, y_pred)
-            
-            # 保存模型
-            if config.save_model:
-                self._save_model(self.model, config.output_path, config.model_format.value)
-            
-            end_time = datetime.now()
-            duration = (end_time - start_time).total_seconds()
-            
-            return TrainingResult(
-                task_id=f"alarm_{start_time.strftime('%Y%m%d_%H%M%S')}",
-                algorithm_type=AlgorithmType.ALARM,
-                status=TrainingStatus.COMPLETED,
-                accuracy=metrics['accuracy'],
-                precision=metrics['precision'],
-                recall=metrics['recall'],
-                f1_score=metrics['f1_score'],
-                start_time=start_time,
-                end_time=end_time,
-                duration=duration,
-                model_path=f"{config.output_path}/model.joblib",
-                parameters_path=f"{config.output_path}/parameters.json",
-                metadata={
-                    'feature_columns': config.feature_columns,
-                    'target_column': config.target_column,
-                    'n_samples': len(train_data),
-                    'alarm_levels': config.algorithm_params.get('alarm_levels', ['normal', 'warning', 'critical'])
-                }
-            )
-            
-        except Exception as e:
-            logger.error(f"报警模型训练失败: {str(e)}")
-            raise
-    
-    async def generate_parameters(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        """生成报警算法参数"""
-        return {
-            'algorithm_type': 'alarm',
-            'model_type': 'random_forest',
-            'parameters': {
-                'n_estimators': config.get('n_estimators', 100),
-                'max_depth': config.get('max_depth', None),
-                'min_samples_split': config.get('min_samples_split', 2)
-            },
-            'thresholds': {
-                'warning_threshold': config.get('warning_threshold', 0.3),
-                'critical_threshold': config.get('critical_threshold', 0.7)
-            },
-            'alarm_levels': config.get('alarm_levels', ['normal', 'warning', 'critical'])
-        }
 
 
 class SimulationTrainer(BaseTrainer):
@@ -2006,11 +1921,8 @@ class TrainerFactory:
     _trainers = {
         AlgorithmType.STATUS_RECOGNITION: StatusRecognitionTrainer,
         AlgorithmType.HEALTH_ASSESSMENT: HealthAssessmentTrainer,
-        AlgorithmType.VIBRATION: VibrationTrainer,
-        AlgorithmType.ALARM: AlarmTrainer,
-        AlgorithmType.SIMULATION: SimulationTrainer,
-        AlgorithmType.TRADITIONAL_ML: TraditionalMLTrainer,
-        AlgorithmType.DEEP_LEARNING: DeepLearningTrainer
+        AlgorithmType.VIBRATION_ANALYSIS: VibrationTrainer,
+        AlgorithmType.SIMULATION: SimulationTrainer
     }
     
     @classmethod
