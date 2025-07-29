@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: train-platform-backend
+  namespace: train-platform
+  labels:
+    app: train-platform-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: train-platform-backend
+  template:
+    metadata:
+      labels:
+        app: train-platform-backend
+    spec:
+      containers:
+      - name: train-platform-backend
+        image: train-platform:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: train-platform-config
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: train-platform-secrets
+              key: db-password
+        - name: DORIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: train-platform-secrets
+              key: doris-password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: storage-mount
+          mountPath: /app/data
+        - name: config-volume
+          mountPath: /app/config
+      volumes:
+      - name: storage-mount
+        persistentVolumeClaim:
+          claimName: train-platform-storage
+      - name: config-volume
+        configMap:
+          name: train-platform-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: train-platform-backend-service
+  namespace: train-platform
+  labels:
+    app: train-platform-backend
+spec:
+  selector:
+    app: train-platform-backend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: train-platform-storage
+  namespace: train-platform
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard 

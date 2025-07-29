@@ -19,6 +19,7 @@
 - **学习率调度**: 支持步进、平台、余弦退火等调度策略
 - **训练控制**: 支持暂停、恢复、取消训练操作
 - **多GPU支持**: 自动检测并使用多GPU进行分布式训练
+- **GPU资源管理**: 集成GPU资源管理器，支持GPU分配、监控和调度
 
 ### 📊 振动算法专用功能
 - **无预处理设计**: 直接处理原始振动信号，无需传统数据预处理
@@ -48,6 +49,7 @@
 - **消息队列**: Celery
 - **机器学习**: scikit-learn, TensorFlow, PyTorch
 - **信号处理**: scipy, numpy
+- **GPU管理**: 自定义GPU资源管理器，支持多厂商GPU
 - **部署**: Docker + Kubernetes
 
 ### 前端技术栈
@@ -94,6 +96,70 @@ python scripts/init-db.py
 ```
 
 ## API接口
+
+### GPU资源管理接口
+
+#### 获取GPU资源状态
+```http
+GET /api/v1/gpu/status
+```
+
+#### 获取可用GPU节点
+```http
+GET /api/v1/gpu/nodes?gpu_type=V100&min_memory_gb=16
+```
+
+#### 分配GPU资源
+```http
+POST /api/v1/gpu/allocate
+Content-Type: application/json
+
+{
+  "gpu_count": 2,
+  "gpu_type": "V100",
+  "memory_gb": 32.0,
+  "distributed_training": true,
+  "mixed_precision": true
+}
+```
+
+#### 验证GPU需求
+```http
+POST /api/v1/gpu/validate
+Content-Type: application/json
+
+{
+  "gpu_count": 1,
+  "gpu_type": "A100",
+  "memory_gb": 80.0
+}
+```
+
+#### 设置TensorFlow GPU环境
+```http
+POST /api/v1/gpu/setup-tensorflow
+Content-Type: application/json
+
+{
+  "gpu_count": 1,
+  "gpu_type": "V100",
+  "memory_gb": 32.0,
+  "gpu_memory_fraction": 0.9
+}
+```
+
+#### 设置PyTorch GPU环境
+```http
+POST /api/v1/gpu/setup-pytorch
+Content-Type: application/json
+
+{
+  "gpu_count": 2,
+  "gpu_type": "A100",
+  "memory_gb": 80.0,
+  "distributed_training": true
+}
+```
 
 ### 算法训练接口
 
@@ -235,6 +301,11 @@ Content-Type: application/json
 ```
 
 ## 测试
+
+### 运行GPU资源管理集成测试
+```bash
+python test_gpu_resource_integration.py
+```
 
 ### 运行振动算法测试
 ```bash

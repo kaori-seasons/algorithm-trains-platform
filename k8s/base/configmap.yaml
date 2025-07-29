@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: train-platform-config
+  namespace: train-platform
+data:
+  # 数据库配置
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "train_platform"
+  DB_USER: "train_user"
+  DB_POOL_SIZE: "10"
+  DB_MAX_OVERFLOW: "20"
+  DB_ECHO: "false"
+  
+  # Redis配置
+  REDIS_URL: "redis://redis:6379/0"
+  
+  # Doris配置
+  DORIS_HOST: "doris-fe"
+  DORIS_PORT: "9030"
+  DORIS_USER: "root"
+  DORIS_DATABASE: "train_data"
+  DORIS_MAX_CONNECTIONS: "10"
+  
+  # MinIO配置
+  MINIO_ENDPOINT: "http://minio:9000"
+  MINIO_ACCESS_KEY: "minioadmin"
+  MINIO_SECRET_KEY: "minioadmin123"
+  
+  # 应用配置
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  
+  # 安全配置
+  SECRET_KEY: "your-secret-key-here-change-in-production"
+  JWT_SECRET: "your-jwt-secret-here-change-in-production"
+  JWT_EXPIRATION: "3600" 
