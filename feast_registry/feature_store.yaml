@@ -1,0 +1,11 @@
+project: train-storage-workflow
+provider: local
+online_store:
+    type: sqlite
+    path: feast_registry/online_store.db
+offline_store:
+    type: file
+    path: feast_registry/offline_store
+registry:
+    type: sqlite
+    path: feast_registry/registry.db 

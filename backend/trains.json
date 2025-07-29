@@ -1,0 +1,54 @@
+{
+    // 异常值处理
+    // methods
+    // 含义: 选择检测异常值的统计方法
+    // 可选值:
+    // "iqr": 基于四分位距（Interquartile Range）方法
+    // "zscore": 基于Z分数（标准差）方法
+    //  IQR方法原理: 计算Q1（25%分位数）、Q3（75%分位数），异常值范围 = Q1 - 1.5×IQR 到 Q3 + 1.5×IQR
+    //  Z-score方法原理: 计算每个值与均值的距离（以标准差为单位），超过3个标准差的视为异常值
+
+    // 含义: 决定如何处理检测到的异常值
+    // 可选值:
+    // "remove": 删除包含异常值的整行数据
+    // "cap": 将异常值截断到合理范围内（不删除数据）
+    //  示例: "remove" 表示直接删除异常值所在的行
+
+    // multiplier: 异常值检测的倍数
+    // 含义: 调整异常值检测的敏感度
+    // 默认值: 1.5（IQR方法的标准倍数）
+    // 作用:
+    // 增大倍数（如2.0）→ 更宽松的检测，保留更多数据
+    // 减小倍数（如1.0）→ 更严格的检测，删除更多数据
+
+    "outlier_handling": {
+      "columns": ["temperature", "vibration"],
+      "method": "iqr",
+      "action": "remove",
+      "multiplier": 1.5
+    },
+    // 特征选择
+    "feature_selection": ["temperature", "vibration", "pressure"],
+    // 采样
+    "sampling": {
+      "method": "stratified",
+      "size": 800
+    },
+    // 特征变换
+    //  支持的变换方法
+    //    "log": 对数变换,
+    //    "formula": "log(1 + x)",
+    //    "适用": "右偏分布的数据，如金额、计数等",
+    //    "效果": "压缩大值，拉伸小值"
+    //    "sqrt": 平方根变换,
+    //    "formula": "√x",
+    //    "适用": "轻度右偏的数据",
+    //    "效果": "比对数变换更温和的变换"
+    //    "standardize": 标准化,
+    //    "formula": "(x - mean) / std",
+    //    "适用": "将特征缩放到均值为0，标准差为1",
+    //    "效果": "消除量纲影响，使不同特征可比"
+    "feature_transformations": [
+      {"column": "temperature", "method": "standardize"}
+    ]
+  }
